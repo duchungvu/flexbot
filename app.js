@@ -23,6 +23,8 @@ const
   { urlencoded, json } = require('body-parser'),
   app = express();  // Creates express http server
 
+  // Parse application/x-www-form-urlencoded
+  app.use(urlencoded({extended: true}));
 /**
  * Adds support for GET requests to our webhook for verification
  * Verification step:
@@ -39,7 +41,7 @@ const
 app.get('/webhook', (req, res) => {
 
     // Your verify token. Should be a random string.
-    let VERIFY_TOKEN = "<YOUR_VERIFY_TOKEN>" // can put in config.js
+    let VERIFY_TOKEN = "a_random_token" // can put in config.js
 
     // Parse the query params
     let mode = req.query['hub.mode'];
