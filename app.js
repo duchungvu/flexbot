@@ -22,6 +22,7 @@ const
   express = require('express'),
   // { urlencoded, json } = require('body-parser'),
   config = require('./services/config'),
+  Receive = require("./services/receive"),
   bodyParser = require('body-parser'),
   app = express().use(bodyParser.json());;  // Creates express http server
 
@@ -90,7 +91,16 @@ app.post('/webhook', (req, res) => {
 
       // Get sender PSID
       let senderPSID = webhookEvent.sender.id;
-      console.log('Sender PSID: ' + senderPSID);
+      // console.log('Sender PSID: ' + senderPSID);
+
+      // Do nothing if webhookEvent is message_deliveries
+      if ('delivery' in webhookEvent) {
+        return;
+      }
+
+      // Handle the received message
+      let receiveMessage = new Receive(senderPSID, webhookEvent);
+      return receiveMessage.handleMessage();
     });
 
     // Returns a '200 OK' response to all requests

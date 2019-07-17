@@ -15,20 +15,21 @@ const request = require("request"),
 module.exports = class GraphAPi {
   /**
    * Send the HTTP POST request to the Messenger Platform
-   * THIS WILL BE USED LATER FOR SENDING MESSAGES
    */
   static callSendAPI(requestBody) {
     request(
       {
         uri: `${config.mPlatfom}/me/messages`,
         qs: {
-          access_token: config.pageAccesToken
+          access_token: config.pageAccessToken
         },
         method: "POST",
         json: requestBody
       },
-      error => {
-        if (error) {
+      (error, _res, body) => {
+        if (!error) {
+          console.log("Request sent:", body);
+        } else {
           console.error("Unable to send message:", error);
         }
       }
@@ -78,7 +79,7 @@ module.exports = class GraphAPi {
       {
         uri: `${config.mPlatfom}/${config.pageId}/subscribed_apps`,
         qs: {
-          access_token: config.pageAccesToken,
+          access_token: config.pageAccessToken,
           subscribed_fields:
             "messages, messaging_postbacks, messaging_optins, \
           message_deliveries, messaging_referrals "
@@ -102,7 +103,7 @@ module.exports = class GraphAPi {
       {
         uri: `${config.mPlatfom}/me/nlp_configs`,
         qs: {
-          access_token: config.pageAccesToken,
+          access_token: config.pageAccessToken,
           nlp_enabled: true
         },
         method: "POST"

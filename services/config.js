@@ -6,12 +6,12 @@ require("dotenv").config();
 module.exports = {
   // Messenger Platform API
   mPlatformDomain: "https://graph.facebook.com",
-  mPlatformVersion: "v3.2",
+  mPlatformVersion: "v3.3",
 
   // Page and Application information
   pageId: process.env.PAGE_ID,
   appId: process.env.APP_ID,
-  pageAccesToken: process.env.PAGE_ACCESS_TOKEN,
+  pageAccessToken: process.env.PAGE_ACCESS_TOKEN,
   appSecret: process.env.APP_SECRET,
   verifyToken: process.env.VERIFY_TOKEN,
 
