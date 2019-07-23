@@ -1,7 +1,7 @@
 'use strict';
 
 const
-  GraphAPi = require("./graph-api")
+  GraphAPi = require("./graph-api"),
   knex = require("../db/knex");
 
 module.exports = class Receive {
@@ -39,6 +39,9 @@ module.exports = class Receive {
         will fix the issue shortly!`
       };
     }
+
+    let user = this.getUser();
+    // console.log('44 ' + user.object);
 
     // Basically, a request should have recipient.id and message (text, attachment)
     let requestBody = {
@@ -78,5 +81,26 @@ module.exports = class Receive {
     let response = { text : 'This feature will be implemented later' };
     console.log('This feature will be implemented later');
     return response;
+  }
+
+  //
+  getUser() {
+    return knex('users')
+    .where('fb_id', parseInt(this.senderPSID, 10))
+    .first()
+    .then((found) => {
+      if (!found) {
+        return knex('users').insert({fb_id : parseInt(this.senderPSID, 10)}).
+        then(() => {
+          console.log("Add :" + this.senderPSID);
+        });
+      } else {
+        return knex('users')
+        .where('fb_id', parseInt(this.senderPSID, 10))
+        .then(() => {
+          console.log("Exist: " + this.senderPSID);
+        });
+      }
+    });
   }
 };
