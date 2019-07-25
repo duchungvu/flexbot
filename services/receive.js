@@ -17,16 +17,15 @@ module.exports = class Receive {
   //
   async handleMessage() {
     let event = this.webhookEvent;
-
     let responses;
 
     // Check if the webhook event is message (not message_deliveries) or postback then check if it's text or something else
     try {
+      this.addOrFindUser();
       if (event.message) {
         let message = event.message;
-        let user = await this.getUser();
         if (message.text) {
-          responses = this.handleTextMessage(user);
+          responses = this.handleTextMessage();
         } else if (message.attachments) {
           responses = this.handleAttachmentMessage();
         }
@@ -53,24 +52,22 @@ module.exports = class Receive {
   }
 
   // Handles messages events with text
-  handleTextMessage(user) {
+  handleTextMessage() {
     console.log(
       "Received text:",
       `${this.webhookEvent.message.text} for ${this.senderPSID}`
     );
 
     let text = this.webhookEvent.message.text;
-    // console.log(user['fb_id']);
 
     if (text.includes('set')) {
-      // console.log("hi");
       knex('reminders')
       .insert({name : text})
       .returning('id')
       .then((id) => {
         console.log("Inserted");
         knex('users_reminders')
-        .insert({fb_id : parseInt(user, 10),
+        .insert({fb_id : parseInt(this.senderPSID, 10),
           reminder_id : parseInt(id, 10)})
         .then(() => {
           console.log("Inserted #2");
@@ -101,7 +98,7 @@ module.exports = class Receive {
   }
 
   //
-  getUser() {
+  addOrFindUser() {
     return knex('users')
     .where('fb_id', parseInt(this.senderPSID, 10))
     .first()
