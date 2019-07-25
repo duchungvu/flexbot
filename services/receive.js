@@ -15,7 +15,7 @@ module.exports = class Receive {
   // If the message is sent successfully, Messenger will send a message_deliveries
   // webhook event
   //
-  handleMessage() {
+  async handleMessage() {
     let event = this.webhookEvent;
 
     let responses;
@@ -24,8 +24,9 @@ module.exports = class Receive {
     try {
       if (event.message) {
         let message = event.message;
+        let user = await this.getUser();
         if (message.text) {
-          responses = this.handleTextMessage();
+          responses = this.handleTextMessage(user);
         } else if (message.attachments) {
           responses = this.handleAttachmentMessage();
         }
@@ -40,9 +41,6 @@ module.exports = class Receive {
       };
     }
 
-    let user = this.getUser();
-    // console.log('44 ' + user.object);
-
     // Basically, a request should have recipient.id and message (text, attachment)
     let requestBody = {
       "recipient": {
@@ -55,13 +53,32 @@ module.exports = class Receive {
   }
 
   // Handles messages events with text
-  handleTextMessage() {
+  handleTextMessage(user) {
     console.log(
       "Received text:",
       `${this.webhookEvent.message.text} for ${this.senderPSID}`
     );
 
-    let response = { text: "You just sent " + this.webhookEvent.message.text}
+    let text = this.webhookEvent.message.text;
+    // console.log(user['fb_id']);
+
+    if (text.includes('set')) {
+      // console.log("hi");
+      knex('reminders')
+      .insert({name : text})
+      .returning('id')
+      .then((id) => {
+        console.log("Inserted");
+        knex('users_reminders')
+        .insert({fb_id : parseInt(user, 10),
+          reminder_id : parseInt(id, 10)})
+        .then(() => {
+          console.log("Inserted #2");
+        })
+      })
+    }
+
+    let response = { text: "You just sent " + text }
     // let message = this.webhookEvent.message.text;
     // if (message.includes("set")) {
     //   knex('users')
@@ -90,17 +107,22 @@ module.exports = class Receive {
     .first()
     .then((found) => {
       if (!found) {
-        return knex('users').insert({fb_id : parseInt(this.senderPSID, 10)}).
-        then(() => {
-          console.log("Add :" + this.senderPSID);
+        return knex('users').insert({fb_id : parseInt(this.senderPSID, 10)})
+        .then((user) => {
+          console.log("Add :" + user['fb_id']);
+          return user['fb_id'];
         });
       } else {
         return knex('users')
         .where('fb_id', parseInt(this.senderPSID, 10))
-        .then(() => {
-          console.log("Exist: " + this.senderPSID);
+        .first()
+        .then((user) => {
+          console.log("Exist: " + user['fb_id']);
+          return user['fb_id'];
         });
       }
     });
+    // console.log(id);
+    // return id;
   }
 };
