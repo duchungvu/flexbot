@@ -41,6 +41,7 @@ module.exports = class GraphAPi {
     // You can use the Graph API's /{app-id}/subscriptions edge to configure and
     // manage your app's Webhooks product
     // https://developers.facebook.com/docs/graph-api/webhooks/subscriptions-edge
+    // Temporary removed: message_deliveries
     console.log(
       `Setting app ${config.appId} callback url to ${config.webhookUrl}`
     );
@@ -54,7 +55,7 @@ module.exports = class GraphAPi {
           verify_token: config.verifyToken,
           fields:
             "messages, messaging_postbacks, messaging_optins, \
-          message_deliveries, messaging_referrals ",
+          messaging_referrals ",
           include_values: "true"
         },
         method: "POST"

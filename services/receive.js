@@ -1,8 +1,13 @@
 'use strict';
 
 const
-  GraphAPi = require("./graph-api"),
-  knex = require("../db/knex");
+  GraphAPi = require('./graph-api'),
+  knex = require('../db/knex'),
+  User = require('../models/User'),
+  Reminder = require('../models/Reminder'),
+  { Model } = require('objection');
+
+Model.knex(knex);
 
 module.exports = class Receive {
   constructor(senderPSID, webhookEvent) {
@@ -14,18 +19,18 @@ module.exports = class Receive {
   // call the appropriate handler function
   // If the message is sent successfully, Messenger will send a message_deliveries
   // webhook event
-  //
   async handleMessage() {
     let event = this.webhookEvent;
     let responses;
 
     // Check if the webhook event is message (not message_deliveries) or postback then check if it's text or something else
     try {
-      this.addOrFindUser();
+      let user = await this.addUser();
+      console.log("User " + user.id + " " + user.fb_id);
       if (event.message) {
         let message = event.message;
         if (message.text) {
-          responses = this.handleTextMessage();
+          responses = await this.handleTextMessage(user);
         } else if (message.attachments) {
           responses = this.handleAttachmentMessage();
         }
@@ -52,34 +57,35 @@ module.exports = class Receive {
   }
 
   // Handles messages events with text
-  handleTextMessage() {
+  async handleTextMessage(user) {
     console.log(
       "Received text:",
       `${this.webhookEvent.message.text} for ${this.senderPSID}`
     );
 
     let text = this.webhookEvent.message.text;
+    let responseText = "You just sent " + text + "\n";
 
     if (text.includes('set')) {
-      knex('reminders')
-      .insert({name : text})
-      .returning('id')
-      .then((id) => {
-        console.log("Inserted");
-        knex('users_reminders')
-        .insert({fb_id : parseInt(this.senderPSID, 10),
-          reminder_id : parseInt(id, 10)})
-        .then(() => {
-          console.log("Inserted #2");
-        })
-      })
+      const reminders = await user
+        .$relatedQuery('reminders')
+        .insert({ name : text });
+
+        console.log("Added :" + reminders);
+    } else if (text.includes('get')) {
+      const reminders = await Reminder
+        .query()
+        .joinRelation('users')
+        .where('users.id', user.id);
+        // .where('users.id', user.id);
+
+        for (var reminder of reminders) {
+          // console.log(reminder.name);
+          responseText = responseText + reminder.name + '\n';
+        }
     }
 
-    let response = { text: "You just sent " + text }
-    // let message = this.webhookEvent.message.text;
-    // if (message.includes("set")) {
-    //   knex('users')
-    // }
+    let response = { text: responseText };
     return response;
   }
 
@@ -98,28 +104,20 @@ module.exports = class Receive {
   }
 
   //
-  addOrFindUser() {
-    return knex('users')
-    .where('fb_id', parseInt(this.senderPSID, 10))
-    .first()
-    .then((found) => {
-      if (!found) {
-        return knex('users').insert({fb_id : parseInt(this.senderPSID, 10)})
-        .then((user) => {
-          console.log("Add :" + user['fb_id']);
-          return user['fb_id'];
-        });
-      } else {
-        return knex('users')
-        .where('fb_id', parseInt(this.senderPSID, 10))
-        .first()
-        .then((user) => {
-          console.log("Exist: " + user['fb_id']);
-          return user['fb_id'];
-        });
-      }
-    });
-    // console.log(id);
-    // return id;
+  async addUser() {
+
+    let user = await User
+      .query()
+      .where('fb_id', parseInt(this.senderPSID, 10));
+
+    if (user.length === 0) {
+      console.log("HMM");
+      user = await User
+      .query()
+      .insert({fb_id : parseInt(this.senderPSID, 10)});
+    }
+
+    // console.log(user[0] instanceof User);
+    return user[0];
   }
 };

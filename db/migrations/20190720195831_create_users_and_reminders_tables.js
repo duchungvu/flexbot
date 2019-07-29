@@ -10,7 +10,7 @@ exports.up = function(knex) {
   })
   .createTable('users_reminders', (table) => {
     table.increments();
-    table.bigInteger('fb_id').references('fb_id').inTable('users').notNullable();
+    table.integer('user_id').references('id').inTable('users').notNullable();
     table.integer('reminder_id').references('id').inTable('reminders').notNullable();
   });
 };
