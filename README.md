@@ -10,6 +10,7 @@ Flexbot is a [Messenger](https://www.messenger.com/) chatbot that help users set
 - [Node.js](https://nodejs.org/en/)
 - [Express.js](https://expressjs.com/)
 - [Knex.js](https://knexjs.org/)
+- [Objection.js](https://vincit.github.io/objection.js/)
 - [PostgreSQL](https://knexjs.org/)
 - [ngrok](https://ngrok.com/)
 
