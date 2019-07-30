@@ -31,6 +31,8 @@ module.exports = class Receive {
         let message = event.message;
         if (message.text) {
           responses = await this.handleTextMessage(user);
+        } else if (message.quick_reply) {
+          responses = this.handleQuickReply();
         } else if (message.attachments) {
           responses = this.handleAttachmentMessage();
         }
@@ -77,7 +79,6 @@ module.exports = class Receive {
         .query()
         .joinRelation('users')
         .where('users.id', user.id);
-        // .where('users.id', user.id);
 
         for (var reminder of reminders) {
           // console.log(reminder.name);
