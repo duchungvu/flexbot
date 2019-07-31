@@ -161,11 +161,11 @@ module.exports = class Receive {
     let response = [
       Response.genText(list),
       Response.genQuickReply('Choose an option: ', [{
-          title: 'GET REMINDERS',
+          title: 'Get reminders',
           payload: 'GET_REMINDERS'
         },
         {
-          title: 'SET REMINDERS',
+          title: 'Set a reminder',
           payload: 'SET_REMINDERS'
         }
       ])
