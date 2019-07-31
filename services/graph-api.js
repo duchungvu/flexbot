@@ -17,7 +17,8 @@ module.exports = class GraphAPi {
    * Send the HTTP POST request to the Messenger Platform
    */
   static callSendAPI(requestBody) {
-    request({
+    request(
+      {
         uri: `${config.mPlatfom}/me/messages`,
         qs: {
           access_token: config.pageAccessToken
@@ -44,14 +45,16 @@ module.exports = class GraphAPi {
     console.log(
       `Setting app ${config.appId} callback url to ${config.webhookUrl}`
     );
-    request({
+    request(
+      {
         uri: `${config.mPlatfom}/${config.appId}/subscriptions`,
         qs: {
           access_token: config.appId + "|" + config.appSecret,
           object: "page",
           callback_url: config.webhookUrl,
           verify_token: config.verifyToken,
-          fields: "messages, messaging_postbacks, messaging_optins, \
+          fields:
+            "messages, messaging_postbacks, messaging_optins, \
           messaging_referrals ",
           include_values: "true"
         },
@@ -73,11 +76,13 @@ module.exports = class GraphAPi {
     // and manage your pages subscriptions
     // https://developers.facebook.com/docs/graph-api/reference/page/subscribed_apps
     console.log(`Subscribing app ${config.appId} to page ${config.pageId}`);
-    request({
+    request(
+      {
         uri: `${config.mPlatfom}/${config.pageId}/subscribed_apps`,
         qs: {
           access_token: config.pageAccessToken,
-          subscribed_fields: "messages, messaging_postbacks, messaging_optins, \
+          subscribed_fields:
+            "messages, messaging_postbacks, messaging_optins, \
           message_deliveries, messaging_referrals "
         },
         method: "POST"
@@ -95,7 +100,8 @@ module.exports = class GraphAPi {
     // https://developers.facebook.com/docs/graph-api/reference/page/nlp_configs/
 
     console.log(`Enable Built-in NLP for Page ${config.pageId}`);
-    request({
+    request(
+      {
         uri: `${config.mPlatfom}/me/nlp_configs`,
         qs: {
           access_token: config.pageAccessToken,
@@ -117,11 +123,13 @@ module.exports = class GraphAPi {
     // Construct the message body
     let requestBody = {
       event: "CUSTOM_APP_EVENTS",
-      custom_events: JSON.stringify([{
-        _eventName: "postback_payload",
-        _value: eventName,
-        _origin: "original_coast_clothing"
-      }]),
+      custom_events: JSON.stringify([
+        {
+          _eventName: "postback_payload",
+          _value: eventName,
+          _origin: "original_coast_clothing"
+        }
+      ]),
       advertiser_tracking_enabled: 1,
       application_tracking_enabled: 1,
       extinfo: JSON.stringify(["mb1"]),
@@ -130,7 +138,8 @@ module.exports = class GraphAPi {
     };
 
     // Send the HTTP request to the Activities API
-    request({
+    request(
+      {
         uri: `${config.mPlatfom}/${config.appId}/activities`,
         method: "POST",
         form: requestBody
