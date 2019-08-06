@@ -6,7 +6,8 @@ const
   User = require('../models/User'),
   Reminder = require('../models/Reminder'),
   { Model } = require('objection'),
-  Response = require('./response');
+  Response = require('./response'),
+  scheduler = require('node-schedule');
 
 Model.knex(knex);
 
@@ -48,15 +49,22 @@ module.exports = class Receive {
         will fix the issue shortly!`
       };
     }
-    if (Array.isArray(responses)) {
-      let delay = 0;
-      for (let response of responses) {
-        this.sendMessage(response, delay * 2000);
-        delay++;
+    var rule = new scheduler.RecurrenceRule();
+    rule.second = 30;
+
+    var demoJob = scheduler.scheduleJob(rule, () => {
+      console.log('demo');
+    // });
+      if (Array.isArray(responses)) {
+        let delay = 0;
+        for (let response of responses) {
+          this.sendMessage(response, delay * 2000);
+          delay++;
+        }
+      } else {
+        this.sendMessage(responses);
       }
-    } else {
-      this.sendMessage(responses);
-    }
+    });
   }
 
   // Handles messages events with text
