@@ -4,7 +4,7 @@ Flexbot is a [Messenger](https://www.messenger.com/) chatbot that help users set
 
 ## Supported features
 - Daily reminders
-- Daily news subscriptions (in development)
+- Daily news subscriptions (WIP)
 
 ## Technologies used
 - [Node.js](https://nodejs.org/en/)
@@ -17,7 +17,7 @@ Flexbot is a [Messenger](https://www.messenger.com/) chatbot that help users set
 ## Setup
 1. Install [Node.js](https://nodejs.org/en/download/) on your machine
 
-2. Clone this repository on your local machine
+2. Clone this repository to your local machine
 ```
 $ git clone https://github.com/duchungvu/FlexBot.git
 $ cd flexbot
@@ -42,7 +42,7 @@ VERIFY_TOKEN=
 APP_URL=
 PORT=
 ```
-I will tell you what these configuration means later but you can find it [here](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
+[Learn more](https://developers.facebook.com/docs/messenger-platform/getting-started/app-setup)
 
 
 ## Run locally
@@ -50,7 +50,7 @@ I will tell you what these configuration means later but you can find it [here](
 ```
 $ ngrok http 3000
 ```
-You can set the port to anything, at here I set 3000. Copy the link at the line `Forwarding` looks like `https://something.ngrok.io` and paste into `APP_URL`
+You can set the port to anything, I set 3000 here. Copy the link on the line `Forwarding` that looks like `https://something.ngrok.io` and paste into `APP_URL`
 
 2. In other terminal, run the the Node.js application
 ```
@@ -61,14 +61,9 @@ $ node app.js
 
 ## Run on heroku
 
-Will be written later
-
-## Tasks to do
-- Add documentation for: `profile.js`, `config.js`, `receive.js`
-- Make `README.md` look better
-- Deal with attachments and postbacks
-- Set up heroku server
+WIP
 
 
 ## Acknowledgements
-This application is based on what I learned from Messenger sample apps [Original Coasting Clothing](https://github.com/fbsamples/original-coast-clothing) and [Chat Extensions](https://github.com/fbsamples/messenger-bot-samples/tree/master/chat-extensions)
+- [Original Coasting Clothing](https://github.com/fbsamples/original-coast-clothing)
+- [Chat Extensions](https://github.com/fbsamples/messenger-bot-samples/tree/master/chat-extensions)
